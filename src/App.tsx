@@ -1,12 +1,17 @@
 import {
+  CallControls,
   CallingState,
+  SpeakerLayout,
   StreamCall,
+  StreamTheme,
   StreamVideo,
   StreamVideoClient,
-  useCall,
   useCallStateHooks,
   type User,
 } from "@stream-io/video-react-sdk";
+
+import "@stream-io/video-react-sdk/dist/css/styles.css";
+import "./index.css";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const token = import.meta.env.VITE_TOKEN;
@@ -24,24 +29,6 @@ const client = new StreamVideoClient({ apiKey, user, token });
 const call = client.call("default", callId);
 await call.join({ create: true });
 
-export const MyUILayout = () => {
-  const call = useCall();
-
-  const { useCallCallingState, useParticipantCount } = useCallStateHooks();
-  const callingState = useCallCallingState();
-  const participantCount = useParticipantCount();
-
-  if (callingState !== CallingState.JOINED) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div>
-      Call "{call?.id} has {participantCount} participants"
-    </div>
-  );
-};
-
 export default function App() {
   return (
     <StreamVideo client={client}>
@@ -51,3 +38,19 @@ export default function App() {
     </StreamVideo>
   );
 }
+
+export const MyUILayout = () => {
+  const { useCallCallingState } = useCallStateHooks();
+  const callingState = useCallCallingState();
+
+  if (callingState !== CallingState.JOINED) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <StreamTheme>
+      <SpeakerLayout participantsBarPosition="bottom" />
+      <CallControls />
+    </StreamTheme>
+  );
+};
